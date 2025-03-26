@@ -1,0 +1,87 @@
+---
+title: "Class notest 3.24"
+format: html
+embed-resources: true
+---
+
+```{r}
+#| message: false
+
+library(tidyverse)
+library(modeldata)
+
+movies <- matrix(c(38, 30, 24, 10, 8,
+                   15, 17, 16, 9, 5,
+                   12, 11, 19, 25, 13),
+                 nrow = 3,
+                 byrow = TRUE)
+```
+
+So far, we've considered a single variable, either quantitative (`t.test`) or categorical (`chisq.test`). Up next, two variables. Are they independent?
+
+Example, `island` and `species` in the `penguins` set. Both of these variables are categorical, so it's natural to make a *contingency table*.
+
+```{r}
+table(penguins$species, 
+      penguins$island)
+```
+
+Null: the variables are independent. Knowing `island` doesn't tell you anything about `species`.
+
+Alternative: the variables are not independent. Knowing `island` changes the proportions of `species`.
+
+```{r}
+ggplot(penguins, 
+       aes(x = island, 
+           fill = species)) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Dark2")
+```
+
+We test these hypotheses using `chisq.test` function, just passing it the contingency table.
+
+```{r}
+penguins_table <- table(penguins$species, 
+                        penguins$island)
+chisq.test(penguins_table)
+```
+
+The p-value is infinitesimal. This data provides strong evidence against the null. We conclude that `species` and `island` are not independent, each gives information about the other.
+
+## Another example
+
+```{r}
+glimpse(stackoverflow)
+```
+
+I'm interested in the relationship between company size and country. While size is quantitative, there is a problem. 
+
+```{r}
+ggplot(stackoverflow, 
+       aes(x = CompanySizeNumber)) +
+  geom_histogram()
+```
+
+I'll group respondants as working either at a large company or a small one. I want a new column of T/F, called "large".
+
+```{r}
+stackoverflow <- stackoverflow %>% 
+  mutate(large = (CompanySizeNumber >= 5000))
+
+stack_table <- table(stackoverflow$Country, 
+                     stackoverflow$large)
+```
+
+$H_0:$ `Country` and `large` are independent.
+
+$H_a$: they are not independent.
+
+(need a plot)
+
+```{r}
+chisq.test(stack_table)
+```
+
+The p-value is infinitesimal (again). We conclude country and large give information about one another. 
+
+
