@@ -1,5 +1,8 @@
 
 # statistical_programming
 
-Content for Math 250, Introduction to Statistical Programming, at Lake Forest College.
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of statistical_programming is to ...
 
